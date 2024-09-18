@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} {{space.title}} {% endblock %}
+
+{% block content %} 
+
+
+
+<table class="table">
+    <thead>
+      <tr>
+        <th style="width: 10%"  scope="col">#</th>
+        <th style="width: 50%" scope="col">Title</th>
+        <th style="width: 20%" scope="col"></th>
+        <th style="width: 20%" scope="col"></th>
+      </tr>
+    </thead>
+    <tbody>
+        {% for content in contents %}
+        <tr>
+            <th scope="row">{{ content.id }}</th>
+            <td>{{ content.title }}</td>
+            <td><button type="button" onclick="window.location.href='edit-content/'+'{{ content.id }}'" class="btn btn-warning">Edit</button></td>
+            <form action="{% url 'delete-content' slug=space.slug id=content.id %}" method="POST">
+                {% csrf_token %}
+                <td><button type="submit" class="btn btn-danger">Delete</button></td>
+
+              </form>
+          </tr>
+        {% endfor %}
+    </tbody>
+  </table>
+
+  {% endblock %}

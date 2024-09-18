@@ -1,0 +1,49 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.3.0/raphael.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/graphdracula/1.3.0/dracula.min.js"></script>
+        <!-- Bootstrap CSS -->
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="//emory-lits-labs.github.io/annotator-meltdown/build/0.3.0/annotator.meltdown.min.css" />
+    <link rel="stylesheet" type="text/css" href="http://emory-lits-labs.github.io/annotator-marginalia/build/0.4.1/annotator.marginalia.min.css" />
+    <title>{% block title %}{% endblock %}</title>
+  </head>
+  
+  <body>    
+
+    {% include 'components/navbar.html' %}
+    <div class="container-fluid mt-3">
+      <div class="row">
+
+        <div {% if request.user.is_authenticated  %} class="col-md-10" {% else %} class="col-md-12" {% endif %} >
+        {% block content %}{% endblock %}        
+        </div>
+        {% if request.user.is_authenticated %}
+          {% include 'components/sidebar.html' %}
+        {% endif %}
+      </div>
+      {% include 'components/footer.html' %}
+    </div>
+
+    <!-- Option 1: Bootstrap Bundle with Popper -->
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    <script src="{% static 'js/annotator.min.js' %}"></script>
+    
+<script type="text/javascript" src="http://emory-lits-labs.github.io/annotator-marginalia/src/scripts/bootstrap.dropdown.js"></script>
+<script type="text/javascript" src="http://emory-lits-labs.github.io/annotator-marginalia/build/0.4.1/annotator.marginalia.min.js"></script>
+<script type="text/javascript" src="//emory-lits-labs.github.io/annotator-meltdown/build/0.3.0/annotator.meltdown.min.js"></script>
+  </body>
+  {% block javascript %}
+
+   {% endblock %}
+</html>

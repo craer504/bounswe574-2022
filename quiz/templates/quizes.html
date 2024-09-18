@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title %} mycreatedquizes {% endblock %}
+
+{% block content %} 
+
+{% for i in allquizes %} 
+
+<div class="card">
+    <h3 class="card-header">Quiz {{ i.id }}</h3>
+    <div class="card-body">
+      <h4 class="card-title">{{ i.title }}</h4>
+      <p class="card-text"><b>Creator:</b> {{ i.creator }}</p>      
+      <a href="/quiz/attempt-quiz/{{i.id}}/" class="btn btn-primary">Attempt Quiz</a>
+      <a href="/quiz/update-question/{{i.space}}/{{i.id}}/" class="btn btn-primary">Update Quiz</a>
+    </div>
+  </div>
+  
+{% empty %}
+
+<p>There isn't any quizes.</p>
+
+{% endfor %} 
+
+  <nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-end">
+      {% if allquizes.has_previous %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ allquizes.previous_page_number }}">Previous</a>
+      </li>
+      {% else %}
+      <li class="page-item disabled">
+        <a class="page-link">Previous</a>
+      </li>
+      {% endif %}
+
+      <li class="page-item"><a class="page-link" href="#">{{ allquizes.number }}</a></li>
+
+
+      {% if allquizes.has_next %}
+
+      <li class="page-item">
+        <a class="page-link" href="?page={{ allquizes.next_page_number }}">Next</a>
+      </li>
+      <li class="page-item">
+        <a class="page-link" href="?page={{ allquizes.paginator.num_page }}">Last Page</a>
+      </li>
+
+      {% endif %}
+     
+    </ul>
+  </nav>
+
+{% endblock %}

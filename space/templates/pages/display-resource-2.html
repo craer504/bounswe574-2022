@@ -1,0 +1,163 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+
+    <link href="https://fonts.googleapis.com/css?family=Lato&display=swap" rel="stylesheet">
+        <!-- Bootstrap CSS -->
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+       
+       <link rel="stylesheet"  href="{% static 'css/recogito.min.css' %}"/>
+    
+    <title>{{ resource.resourcename }}</title>
+
+    <style>
+html, body {
+        padding:10px 20px;
+        margin:0;
+      }
+
+      h1 {
+        font-size:22px;
+        margin-top:30px;
+        margin-bottom:20px;
+      }
+
+      #outer-container {
+        position:relative;
+      }
+
+      #content {
+        max-width:920px;
+        font-family:'Lato', sans-serif;
+        font-size:17px;
+        line-height:27px;
+      }
+      
+      .comment:nth-child(2) {
+        display: none;
+      }
+      .r6o-tag{
+        display: none !important;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      
+       </header>
+       <div id="outer-container">
+    <div id="content" class="plaintext">
+      <h1>{{ resource.resourcename }}</h1>
+        {{ resource.resourceinfo|safe }}
+        <h1>Attachment</h1>
+        {% if resource.resourceattachment %}
+        <a href="{{resource.resourceattachment.url}}"> {{ resource.resourceattachment }}</a>
+        {% endif %}
+      </div>
+       </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+
+    <script src="{% static 'js/recogito.min.js' %}"></script>
+
+    
+    <script>
+    
+    $( document ).ready(function() {
+
+      
+      (function() {
+        // Intialize Recogito
+        var r = Recogito.init({
+          content: 'content', // Element id or DOM node to attach to
+          locale: 'auto',
+          allowEmpty: true,
+      	  widgets: [
+            { widget: 'COMMENT' },
+            { widget: 'TAG', vocabulary: [ 'Place', 'Person', 'Event', 'Organization', 'Animal' ] }
+          ],
+          relationVocabulary: [ 'isRelated', 'isPartOf', 'isSameAs ']
+        });
+
+        r.loadAnnotations('/api/get-annotations/?uri='+window.location.href)
+        r.on('selectAnnotation', function(a) {
+          console.log('selected', a);
+        });
+        r.on('createAnnotation', function(a) {
+          var annId = a.id;
+          a.id = window.location.href + '/'+ annId;
+          $.ajax({
+            type: 'POST',
+            url: "/api/create-annotation/",
+            data: {
+              annotation: JSON.stringify(a),
+              'csrfmiddlewaretoken': '{{ csrf_token }}',},
+            dataType: 'json',
+            success: function (response) {
+              //location.reload();
+            },
+            error: function (response) {
+              alert(response["responseJSON"]["error"]);
+            }
+          })
+          console.log('created', a);
+        });
+
+        r.on('updateAnnotation', function(a, previous) {
+          $.ajax({
+            type: 'POST',
+            url: "/api/update-annotation/",
+            data: {
+              annotation: JSON.stringify(a),
+              'csrfmiddlewaretoken': '{{ csrf_token }}',},
+            dataType: 'json',
+            success: function (response) {
+              //location.reload();
+            },
+            error: function (response) {
+              alert(response["responseJSON"]["error"]);
+              location.reload();
+            }
+          })
+          console.log('updated', a);
+        });
+        r.on('deleteAnnotation', function(a) {
+          $.ajax({
+            type: 'POST',
+            url: "/api/delete-annotation/",
+            data: {
+              annotation: JSON.stringify(a),
+              'csrfmiddlewaretoken': '{{ csrf_token }}',},
+            dataType: 'json',
+            success: function (response) {
+              //location.reload();
+            },
+            error: function (response) {
+              alert(response["responseJSON"]["error"]);
+              location.reload();
+            }
+          })
+        });
+
+        r.on('cancelSelected', function(annotation) {
+          console.log('cancel', annotation);
+        });
+        var annotationMode = 'ANNOTATION'; 
+        r.setMode(annotationMode);
+        var arg = {
+          id : '',
+          displayName: '{{ user.username }}'
+        }
+        r.setAuthInfo(arg);
+      })();
+ 
+    
+    });
+
+    </script>
+  </body>
+</html>

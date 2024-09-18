@@ -1,0 +1,199 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block title %} Update Quiz {% endblock %}
+
+{% block content %}
+
+<form action="" method="POST" id="questionHolder">
+    <input type="hidden" name="space_id" value={{space_id}}>
+    <input type="hidden" name="quiz_id" value={{quiz_id}}>
+
+    <h4>Quiz Details:</h4>
+
+    <label for="">Title</label>
+    <input type="text" name="title">
+    <br>
+    <br>
+
+    <label for="">Description</label>
+    <input type="text" name="description">
+    <br>
+    <br>
+
+    <h4>Question Details:</h4>
+    <label for="">Statement</label>
+    <input type="text" name="quizstatement">
+    <br>
+    <br>
+
+    <label for="">Option1</label>
+    <input type="text" name="quizoption1">
+    <br>
+    <br>
+
+
+    <label for="">Option2</label>
+    <input type="text" name="quizoption2">
+    <br>
+    <br>
+
+    <label for="">Option3</label>
+    <input type="text" name="quizoption3">
+    <br>
+    <br>
+
+    <label for="">Option4</label>
+    <input type="text" name="quizoption4">
+    <br>
+    <br>
+
+    <label for="">Choose correct option</label>
+    <input type="text" name="answer">
+    <br>
+    <br>
+
+    <label for="">Type help link</label>
+    <input type="text" name="helplinks">
+
+</form>
+
+<center>
+    <button id="addquestion" class="btn btn-success mt-3 mb-3">Add question</button>
+    <br><br>
+    <button id="showinputs" class="btn btn-danger mt-3 mb-3">Submit</button>
+    <center>
+
+
+        {% endblock %}
+
+
+        {% block javascript %}
+
+        <script>
+
+            console.log("i am working");
+            var quiz_id = $("input[name=quiz_id]").val();
+            console.log(quiz_id);
+
+            $(document).ready(function () {
+
+                $(document).on("click", "#addquestion", function (event) {
+
+                    console.log("i am clicked");
+                    $("#questionHolder").append(`
+
+            <br/>
+            <br/>
+            <label for="">Statement</label>
+            <input type="text" name="quizstatement">
+            <br/>
+            <br/>
+
+            <label for="">Option1</label>
+            <input type="text" name="quizoption1">
+            <br/>
+            <br/>
+
+            <label for="">Option2</label>
+            <input type="text" name="quizoption2">
+            <br/>
+            <br/>
+
+            <label for="">Option3</label>
+            <input type="text" name="quizoption3">
+            <br/>
+            <br/>
+
+            <label for="">Option4</label>
+            <input type="text" name="quizoption4">
+            <br>
+            <br>
+
+            <label for="">Choose correct option</label>
+            <input type="text" name="answer">
+            <br>
+            <br>
+
+            <label for="">Type help link</label>
+            <input type="text" name="helplinks">
+            
+            
+            `);
+
+                });
+
+                $("#showinputs").click(function () {
+
+                    var creator = $("input[name='creator']").val();
+                    var title = $("input[name='title']").val();
+                    var description = $("input[name='description']").val();
+                    var quizstatements = [];
+                    var quizoption1 = [];
+                    var quizoption2 = [];
+                    var quizoption3 = [];
+                    var quizoption4 = [];
+                    var answer = [];
+                    var help_links = [];
+                    var space_id = $("input[name=space_id]").val();
+                    var quiz_id = $("input[name=quiz_id]").val();
+                    $("input[name='quizstatement']").each(function () {
+                        quizstatements.push($(this).val());
+                    });
+
+                    $("input[name='quizoption1']").each(function () {
+                        quizoption1.push($(this).val());
+                    });
+
+                    $("input[name='quizoption2']").each(function () {
+                        quizoption2.push($(this).val());
+                    });
+
+                    $("input[name='quizoption3']").each(function () {
+                        quizoption3.push($(this).val());
+                    });
+
+                    $("input[name='quizoption4']").each(function () {
+                        quizoption4.push($(this).val());
+                    });
+
+                    $("input[name='answer']").each(function () {
+                        answer.push($(this).val());
+                        console.log($(this).val())
+                    });
+
+                    $("input[name='helplinks']").each(function () {
+                        help_links.push($(this).val());
+                        console.log($(this).val())
+                    });
+
+                    console.log(quizstatements);
+                    console.log(quizoption1);
+                    console.log(quizoption2);
+                    console.log(quizoption3);
+                    console.log(quizoption4);
+                    console.log(help_links);
+
+
+                    $.ajax({
+                        type: 'POST',
+                        url: "/quiz/update-question/" + space_id + "/" + quiz_id + "/",
+                        data: { 'creator': creator, 'title': title, 'description': description, 'quizstatements': quizstatements, 'quizoption1': quizoption1, 'quizoption2': quizoption2, 'quizoption3': quizoption3, 'quizoption4': quizoption4, 'answers': answer, 'helplinks': help_links },
+                        success: function (response) {
+                            console.log("successful request");
+                            alert("Quiz updated successfully");
+                            window.location.replace("/quiz/update-question/" + space_id + "/" + quiz_id + "/");
+                        },
+                        error: function (response) {
+                            // alert the error if any error occured
+                            console.log("request failed");
+                        }
+                    })
+                })
+
+            });
+
+        </script>
+
+        {% endblock %}

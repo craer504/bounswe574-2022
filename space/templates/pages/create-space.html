@@ -1,0 +1,185 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block title %} Create Space {% endblock %}
+
+{% block content %} 
+    <form action= "{% url 'create-space' %}" method="POST">
+        {% csrf_token %}
+        {{ form.media }}
+        {{ form|crispy }}
+        
+        <div id="div_id_tag1" class="form-group"> 
+            <label for="id_tag1" class="">Tag1</label>
+             <div> <input type="text" name="tag1" maxlength="50" class="textinput textInput form-control" id="id_tag1"> 
+            </div>
+         </div>
+         <div class="autocomplete" >
+          <div id="div_id_wiki1" class="form-group"> 
+              <label for="id_wiki1" class="">Wiki1</label>
+               <div> <input type="text" name="wiki1" maxlength="50" class="textinput textInput form-control" id="id_wiki1"> 
+            </div> 
+        </div> 
+    </div>
+        <div id="div_id_tag2" class="form-group"> 
+            <label for="id_tag2" class="">
+            Tag2
+        </label>
+         <div> <input type="text" name="tag2" maxlength="50" class="textinput textInput form-control" id="id_tag2"> </div> 
+        </div>
+        <div class="autocomplete" >
+         <div id="div_id_wiki2" class="form-group"> <label for="id_wiki2" class="">
+            Wiki2
+        </label> 
+        <div> <input type="text" name="wiki2" maxlength="50" class="textinput textInput form-control" id="id_wiki2"> </div>
+     </div> 
+    </div>
+     <div id="div_id_tag3" class="form-group"> <label for="id_tag3" class="">
+            Tag3
+        </label>
+         <div> <input type="text" name="tag3" maxlength="50" class="textinput textInput form-control" id="id_tag3"> </div> </div>
+         <div class="autocomplete" >
+         <div id="div_id_wiki3" class="form-group"> <label for="id_wiki3" class="">
+            Wiki3
+        </label> 
+        <div> <input type="text" name="wiki3" maxlength="50" class="textinput textInput form-control" id="id_wiki3"> </div> </div></div>
+        <input type="submit" class= "btn btn-danger mt-3 mb-3" value="Create a Space"/>
+    </form>
+<style>
+
+
+/*the container must be positioned relative:*/
+.autocomplete {
+  position: relative;
+  display: block;
+}
+
+input {
+  border: 1px solid transparent;
+  background-color: #f1f1f1;
+  padding: 10px;
+  font-size: 16px;
+}
+
+input[type=text] {
+  background-color: #f1f1f1;
+  width: 100%;
+}
+
+input[type=submit] {
+  background-color: DodgerBlue;
+  color: #fff;
+  cursor: pointer;
+}
+
+.autocomplete-items {
+  position: absolute;
+  border: 1px solid #d4d4d4;
+  border-bottom: none;
+  border-top: none;
+  z-index: 99;
+  /*position the autocomplete items to be the same width as the container:*/
+  top: 100%;
+  left: 0;
+  right: 0;
+}
+
+.autocomplete-items div {
+  padding: 10px;
+  cursor: pointer;
+  background-color: #fff; 
+  border-bottom: 1px solid #d4d4d4; 
+}
+
+/*when hovering an item:*/
+.autocomplete-items div:hover {
+  background-color: #e9e9e9; 
+}
+
+/*when navigating through the items using the arrow keys:*/
+.autocomplete-active {
+  background-color: DodgerBlue !important; 
+  color: #ffffff; 
+}
+
+</style>
+<script>
+    function autocomplete(inp) {
+      /*the autocomplete function takes two arguments,
+      the text field element and an array of possible autocompleted values:*/
+      var currentFocus;
+      
+      /*execute a function when someone writes in the text field:*/
+      inp.addEventListener("input", function(e) {
+        console.log("test")
+          var a, b, i, val = this.value;
+          descriptions = []
+          wikiIds = []
+          console.log("trigger")
+          var elem = $(this)[0];
+          $.ajax({
+                url: "https://www.wikidata.org/w/api.php?action=wbsearchentities&origin=*&language=en&format=json&search="+val,
+                type: 'GET',
+  
+                dataType: 'json', // added data type
+                success: function(res) {
+                    console.log(res)
+                    console.log(res['search'])
+                    res['search'].forEach(element => {
+                        descriptions.push(element['label'])
+                        wikiIds.push(element['id'])
+                    });
+
+                    closeAllLists();
+                    if (!val) { return false;}
+                    currentFocus = -1;
+                    a = document.createElement("DIV");
+                    console.log(elem)
+                    a.setAttribute("id", this.id + "autocomplete-list");
+                    a.setAttribute("class", "autocomplete-items");
+                    elem.parentNode.appendChild(a);
+                    for (i = 0; i < descriptions.length; i++) {
+                        if (true) {
+                        b = document.createElement("DIV");
+                        b.innerHTML = "<strong>" + descriptions[i].substr(0, val.length) + "</strong>";
+                        b.innerHTML += descriptions[i].substr(val.length);
+                        b.innerHTML += "<input type='hidden' data-id='"+i+"' value='" + descriptions[i] + "'>";
+                        b.addEventListener("click", function(e) {
+
+                            console.log($(this).find('input').attr("data-id"))
+                            inp.value = wikiIds[$(this).find('input').attr("data-id")]
+                            closeAllLists();
+                        });
+                        a.appendChild(b);
+                        }
+                    }
+                }
+            });
+
+
+      });
+    
+    
+      function closeAllLists(elmnt) {
+
+        var x = document.getElementsByClassName("autocomplete-items");
+        for (var i = 0; i < x.length; i++) {
+          if (elmnt != x[i] && elmnt != inp) {
+            x[i].parentNode.removeChild(x[i]);
+          }
+        }
+      }
+      document.addEventListener("click", function (e) {
+          closeAllLists(e.target);
+      });
+    }
+    
+    var descriptions = []
+    var wikiIds=[]
+    autocomplete(document.getElementById("id_wiki1"));
+    autocomplete(document.getElementById("id_wiki2"));
+    autocomplete(document.getElementById("id_wiki3"));
+
+    </script>
+{% endblock %}

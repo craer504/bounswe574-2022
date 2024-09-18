@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block title %} Co-Edu {% endblock %}
+
+{% load static %}
+
+{% block content %}
+
+<div class=" col-md-12">
+    <h3> Glossary</h3>
+
+    {% if request.user in space.members.all or request.user == space.author %}
+    <a class="btn btn-danger mt-3 mb-3" href="{% url 'create-term' slug=space.slug %}">Write a Term</a>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Term #</th>
+                <th scope="col">Term</th>
+                <th scope="col">Definition</th>
+                <th scope="col">Related Step</th>
+                <th scope="col">Writer</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            {% for i in terms %}
+            <tr>
+                <th scope="row">{{ forloop.counter }}</th>
+                <td>{{i.termtitle|safe}}</td>
+                <td>{{i.termdefinition|safe}}</td>
+                <td>{{i.termstep|safe}}</td>
+                <td>{{i.termwriter}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% elif request.user.is_authenticated %}
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Term #</th>
+                <th scope="col">Term</th>
+                <th scope="col">Definition</th>
+                <th scope="col">Related Step</th>
+                <th scope="col">Writer</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            {% for i in terms %}
+            <tr>
+                <th scope="row">{{ forloop.counter }}</th>
+                <td>{{i.termtitle|safe}}</td>
+                <td>{{i.termdefinition|safe}}</td>
+                <td>{{i.termstep|safe}}</td>
+                <td>{{i.termwriter}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% else %}
+
+    Please login to view this part.
+
+    {% endif %}
+
+
+</div>
+
+{% endblock %}

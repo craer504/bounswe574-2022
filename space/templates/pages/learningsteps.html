@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block title %} Co-Edu {% endblock %}
+
+{% load static %}
+
+{% block content %}
+
+<div class=" col-md-12">
+    <h3> Learning Steps</h3>
+
+    {% if request.user in space.members.all or request.user == space.author %}
+    <a class="btn btn-danger mt-3 mb-3" href="{% url 'create-step' slug=space.slug %}">Add a Step</a>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Step #</th>
+                <th scope="col">Title</th>
+                <th scope="col">Content</th>
+                <th scope="col">Related Resource</th>
+                <th scope="col">Creator</th>
+            </tr>
+        </thead>
+        <tbody>
+
+
+            {% for i in steps %}
+            <tr>
+                <th scope="row">{{ forloop.counter }}</th>
+                <td><a href="{% url 'display-step' slug=space.slug id=i.id %}">
+                        <div style="height:100%;width:100%">{{i.steptitle|safe}}</div>
+                    </a></td>
+                <td>{{i.stepcontent|safe|truncatechars_html:100}}</td>
+                <td>{{i.relatedresource|safe}}</td>
+                <td>{{i.stepcreator}}</td>
+            </tr>
+            {% endfor %}
+
+        </tbody>
+    </table>
+
+    {% elif request.user.is_authenticated %}
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Step #</th>
+                <th scope="col">Title</th>
+                <th scope="col">Content</th>
+                <th scope="col">Related Resource</th>
+                <th scope="col">Creator</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            {% for i in steps %}
+            <tr>
+                <th scope="row">{{ forloop.counter }}</th>
+                <td><a href="{% url 'display-step' slug=space.slug id=i.id %}">
+                        <div style="height:100%;width:100%">{{i.steptitle|safe}}</div>
+                    </a></td>
+                <td>{{i.stepcontent|safe|truncatechars_html:100}}</td>
+                <td>{{i.relatedresource|safe}}</td>
+                <td>{{i.stepcreator}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% else %}
+
+    Please login to view this part.
+
+    {% endif %}
+
+
+</div>
+
+{% endblock %}

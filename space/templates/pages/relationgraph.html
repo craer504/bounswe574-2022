@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block title %} Co-Edu {% endblock %}
+
+{% load static %}
+
+{% block content %}
+
+
+<div class="row">
+    <div class="col-md-11">
+        <h3> Relationship Graph</h3>
+        {% if request.user in space.members.all or request.user == space.author %}
+        <a class="btn btn-primary" style="float:right" href="{% url 'create-content' slug=space.slug %}">Add</a>
+        <a class="btn btn-warning" style="float: right; margin-right: 30px"
+            href="{% url 'display-contents' slug=space.slug %}">Edit</a>
+        {% endif %}
+        <div id="canvas" data-id="{{space.slug}}"></div>
+    </div>
+
+</div>
+
+<style>
+    rect {
+      cursor: pointer !important;
+    }
+  
+    tspan {
+      cursor: pointer !important;
+    }
+  
+
+  </style>
+  <script>
+    $(document).ready(function () {
+  
+  
+      var g = new Dracula.Graph();
+      var width = 1200;
+      var height = 450;
+  
+      //var width = $(document).width()+70;
+      //var height = $(document).height()+10;
+  
+      var render = function (r, n) {
+        var frame = r.rect(0 - 3 * n.label.length, -10, 6 * n.label.length, 50);
+        frame.attr({
+          fill: n.Color, r: 9,
+          'stroke-width': 2
+        });
+        /* the Raphael set is obligatory, containing all you want to display */
+        var set = r.set().push(frame.attr({ fill: '#fcfcfc', 'fill-opacity': 1, 'stroke-width': 2, r: 9 }))
+          .push(r.text(0, 10, n.label)).click(function () {
+            if (n.link != null) {
+              window.location.href = n.link;
+  
+            }
+          });
+        return set;
+      };
+  
+      var slug = $('#canvas').data("id");
+      $.ajax({
+        type: 'GET',
+        async: false,
+        url: '/spacedetails/' + slug + '/content',
+        data: {},
+        dataType: 'json',
+        success: function (response) {
+          for (var i = 0; i < response.nodes.length; i++) {
+            g.addNode(response.nodes[i].id, {
+              label: response.nodes[i].title,
+              link: response.nodes[i].link,
+              /* filling the shape with a color makes it easier to be dragged */
+              render: render
+            });
+          }
+          for (var i = 0; i < response.relations.length; i++) {
+            g.addEdge(response.relations[i].source_content_id, response.relations[i].target_content_id, { directed: true });
+          }
+        },
+        error: function (response) {
+          alert(response["responseJSON"]["error"]);
+        }
+      })
+  
+  
+  
+      var layouter = new Dracula.Layout.Spring(g);
+  
+  
+      var renderer = new Dracula.Renderer.Raphael(document.getElementById('canvas'), g, width - 100, height - 50);
+      layouter.layout();
+      renderer.draw();
+    });
+  </script>
+{% endblock %}

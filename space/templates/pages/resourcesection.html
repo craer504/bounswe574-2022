@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+
+{% block title %} Co-Edu {% endblock %}
+
+{% block content %} 
+
+<div class="row">
+    <div class="col-md-11">
+ 
+      <h3> Resources</h3>
+
+      {% if request.user in space.members.all or request.user == space.author %}
+      <a class="btn btn-success btn-lg mt-3 mb-3" href="{% url 'resource' slug=space.slug %}">Add a Resource </a>
+
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Resource</th>
+            <th scope="col">Information</th>
+            <th scope="col">Attachment</th>
+            <th scope="col">Attacher</th>
+            <th scope="col">Last Modified</th>
+            <th scope="col">Update</th>
+            <th scope="col">Remove</th>
+          </tr>
+        </thead>
+        <tbody>
+
+          {% for i in resources %}
+          <tr>
+            <td><a href="{% url 'display-resource' slug=space.slug id=i.id %}">{{i.resourcename|safe}}</a></td>
+            <td>{{i.resourceinfo|safe|truncatechars_html:150}}</td>
+            <td>{% if i.resourceattachment %}
+              <a href="{{i.resourceattachment.url}}"> {{ i.resourceattachment }}</a>
+              {% endif %}</td>
+
+            <td>{{i.resourcecreator}}</td>
+            <td>{{i.updated_time}}</td>
+            <td><a class="btn btn-outline-success" href="{% url 'update-resource' slug=space.slug id=i.id %}">Update</a></td>
+            <td><a class="btn btn-outline-success" href="{% url 'delete-resource' slug=space.slug id=i.id %}">Delete</a></td>
+            
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-end">
+          {% if resources.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?page2=1">First Page</a>
+          </li>
+
+          <li class="page-item">
+            <a class="page-link" href="?page2={{resources.previous_page_number}}" tabindex="-1" aria-disabled="true">Previous</a>
+          </li>
+
+          {% else %}
+          <li class="page-item disabled">
+            <a class="page-link" href="#" tabindex="-1" aria-disabled="true">First Page</a>
+          </li>
+
+          <li class="page-item disabled">
+            <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+          </li>
+          {% endif %}
+  
+          <li class="page-item"><a class="page-link" href="#">{{ resources.number }}</a></li>  
+  
+          {% if resources.has_next %}
+  
+          <li class="page-item">
+            <a class="page-link" href="?page2={{resources.next_page_number}}">Next</a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="?page2={{resources.paginator.num_pages}}">Last Page</a>
+          </li>
+  
+          {% endif %}
+  
+        </ul>
+      </nav>
+
+      {% elif request.user.is_authenticated %}
+
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Resource</th>
+            <th scope="col">Information</th>
+            <th scope="col">Attachment</th>
+            <th scope="col">Attacher</th>
+            <th scope="col">Last Modified</th>
+            <th scope="col">Update</th>
+            <th scope="col">Remove</th>
+          </tr>
+        </thead>
+        <tbody>
+
+          {% for i in resources %}
+          <tr>
+            <td><a href="{% url 'display-resource' slug=space.slug id=i.id %}">{{i.resourcename|safe}}</a></td>
+            <td>{{i.resourceinfo|safe|truncatechars_html:150}}</td>
+            <td>{% if i.resourceattachment %}
+              <a href="{{i.resourceattachment.url}}"> {{ i.resourceattachment }}</a>
+              {% endif %}</td>
+
+            <td>{{i.resourcecreator}}</td>
+            <td>{{i.updated_time}}</td>
+            <td><a>You are not authorized to update </a></td>
+            <td><a>You are not authorized to delete </a></td>
+            
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-end">
+          {% if resources.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?page2=1">First Page</a>
+          </li>
+
+          <li class="page-item">
+            <a class="page-link" href="?page2={{resources.previous_page_number}}" tabindex="-1" aria-disabled="true">Previous</a>
+          </li>
+
+          {% else %}
+          <li class="page-item disabled">
+            <a class="page-link" href="#" tabindex="-1" aria-disabled="true">First Page</a>
+          </li>
+
+          <li class="page-item disabled">
+            <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+          </li>
+          {% endif %}
+  
+          <li class="page-item"><a class="page-link" href="#">{{ resources.number }}</a></li>  
+  
+          {% if resources.has_next %}
+  
+          <li class="page-item">
+            <a class="page-link" href="?page2={{resources.next_page_number}}">Next</a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="?page2={{resources.paginator.num_pages}}">Last Page</a>
+          </li>
+  
+          {% endif %}
+  
+        </ul>
+      </nav>
+
+
+      {% else %}
+
+      Please login to view this part.
+
+      {% endif %}
+  
+    </div>
+
+  </div>
+
+{% endblock %}

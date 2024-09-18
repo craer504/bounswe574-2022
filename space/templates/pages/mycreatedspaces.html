@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %} mycreatedspaces {% endblock %}
+
+{% block content %} 
+
+{% for i in allspaces %} 
+
+<div class="card">
+    <h3 class="card-header">Space {{ i.id }}</h3>
+    <div class="card-body">
+      <h4 class="card-title">{{ i.title }}</h4>
+      <p class="card-text">{{ i.content|safe|truncatechars_html:250 }}</p>
+      <p class="card-text"><h5>Space Members:</h5> {% for j in i.members.all %} {{ j }} {% endfor %} </p>
+      <p class="card-text"><b>Creator:</b> {{ i.author }}</p>
+      <p class="card-text"> created {{ i.created_date|timesince }} ago.</p>      
+      <a href="{% url 'spacedetails' slug=i.slug %}" class="btn btn-primary">Go Space</a>
+    </div>
+  </div>
+  
+{% empty %}
+
+<p>There isn't any spaces.</p>
+
+{% endfor %} 
+
+  <nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-end">
+      {% if allspaces.has_previous %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ allspaces.previous_page_number }}">Previous</a>
+      </li>
+      {% else %}
+      <li class="page-item disabled">
+        <a class="page-link">Previous</a>
+      </li>
+      {% endif %}
+
+      <li class="page-item"><a class="page-link" href="#">{{ allspaces.number }}</a></li>
+
+
+      {% if allspaces.has_next %}
+
+      <li class="page-item">
+        <a class="page-link" href="?page={{ allspaces.next_page_number }}">Next</a>
+      </li>
+      <li class="page-item">
+        <a class="page-link" href="?page={{ allspaces.paginator.num_page }}">Last Page</a>
+      </li>
+
+      {% endif %}
+     
+    </ul>
+  </nav>
+
+{% endblock %}

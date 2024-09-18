@@ -1,0 +1,197 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} {{space.title}} {% endblock %}
+
+
+
+{% block content %}
+
+<div class="row">
+  <div class="col-md-9">
+
+    <div class="card mb-3">
+      <h3 class="card-header">{{ space.title }}</h3>
+      <div class="card-body">
+
+        <p class="card-text">{{ space.content|safe }}</p>
+
+        {% if request.user in space.members.all or request.user == space.author %}
+        <p class="card-text">
+        <p> {{ space.tag1 }} {{ space.tag2 }} {{ space.tag3 }} </p>  
+        <h5><b>Creator: </b><a
+            href="{% url 'display-members' slug=space.slug id=space.author.id %}">{{space.author}}</a></h5>
+        </p>
+        <p class="card-text"> created {{ space.created_date|timesince }} ago.
+          {% endif %}
+
+        <p>
+          {% if request.user == space.author %}
+          <a class="btn btn-outline-primary" href="{% url 'update-space' slug=space.slug %}">Update</a>
+          <a class="btn btn-outline-primary" href="{% url 'delete-space' slug=space.slug %}">Delete</a>
+          {% endif %}
+        </p>
+        </p>
+
+      </div>
+    </div>
+
+  </div>
+
+
+  <div class="col-md-3">
+    <p class="card-text">
+    <div class="col-md-5">
+      <table class="table">
+        <thead class="thead-dark">
+          <tr>
+
+            <th scope="col">
+              <h5>Space Members</h5>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if request.user in space.members.all or request.user == space.author %}
+          {% for j in space.members.all %}
+          <tr>
+
+            <td><a href="{% url 'display-members' slug=space.slug id=j.id %}">{{ j }}</a></td>
+          </tr>
+          {% endfor %}
+
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+    </p>
+
+  </div>
+
+</div>
+
+
+
+<div class="row">
+  <div class="col-md-3">
+      <button class="my-btn"  ><a href="{% url 'resource_section' slug=space.slug %}">Resource Section</a></button>
+  </div>
+
+
+
+  <div class="col-md-3">
+      <button class="my-btn"  ><a href="{% url 'discussion_section' slug=space.slug %}">Discussion Section</a></button>
+
+  </div>
+
+  <div class="col-md-3">
+
+      <button class="my-btn"  ><a href="{% url 'learning_section' slug=space.slug %}">Learning Section</a></button>
+      
+  </div>
+
+</div>
+
+
+<div class="row mt-5">
+  <div class="col-md-3">
+    <button class="my-btn"  ><a href="{% url 'quiz_section' slug=space.slug %}">Quiz Section</a></button>
+
+  </div>
+
+
+  <div class="col-md-3">
+      <button class="my-btn"  ><a href="{% url 'glossary_section' slug=space.slug %}">Glossary Section</a></button>
+  </div>
+
+  <div class="col-md-3">
+      <button class="my-btn"  ><a href="{% url 'graph_section' slug=space.slug %}">Graph Section</a></button>
+  </div>
+
+
+
+</div>
+
+
+<div class="row" style="margin-top: 10%;">
+  <div class="col-md-7">
+    <h3> Latest Activity</h3>
+    {% if request.user in space.members.all or request.user == space.author %}
+   
+    {% for i in activities %}
+
+
+    <div class="card">
+      <div class="card-body" style="display:flex;flex-direction: row;">
+        <div>
+          <h5 class="card-title">{{i.activity.actor}}</h5>
+          <p class="car-text"> {{i.activity.summary}}</p>
+          <p> {{i.activity.published}}</p>
+        </div>
+      </div>
+    </div>
+
+    {% endfor %}
+
+
+    <nav aria-label="Page navigation example">
+      <ul class="pagination justify-content-end">
+        {% if activities.has_previous %}
+        <li class="page-item">
+          <a class="page-link" href="?page3=1">First Page</a>
+        </li>
+        <li class="page-item">
+          <a class="page-link" href="?page3={{ activities.previous_page_number }}">Previous</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+          <a class="page-link" >First Page</a>
+        <li class="page-item disabled">
+          <a class="page-link">Previous</a>
+        </li>
+        {% endif %}
+
+        <li class="page-item"><a class="page-link" href="#">{{ activities.number }}</a></li>
+
+
+        {% if activities.has_next %}
+
+        <li class="page-item">
+          <a class="page-link" href="?page3={{ activities.next_page_number }}">Next</a>
+        </li>
+        <li class="page-item">
+          <a class="page-link" href="?page3={{ activities.paginator.num_pages}}">Last Page</a>
+        </li>
+
+        {% endif %}
+
+      </ul>
+    </nav>
+
+    {% else %}
+
+    You are not authorized to view this part of the co-edu space.
+
+    {% endif %}
+
+  </div>
+
+</div>
+
+
+
+
+<style>
+      .my-btn {
+      color: #ffffff;
+      background-color: blue;
+      padding: 20px 40px;
+      border: 0px solid;
+      border-radius: 10px;
+  
+    }
+  
+    .my-btn a {
+      color: #ffffff;
+    }
+</style>
+{% endblock %}

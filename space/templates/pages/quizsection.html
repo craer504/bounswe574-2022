@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %} Co-Edu {% endblock %}
+
+{% block content %}
+
+
+<div class="row ">
+  <div class="col-md-7">
+    <h3> Quizzes</h3>
+
+    {% if request.user in space.members.all or request.user == space.author %}
+    <a class="btn btn-danger mt-3 mb-3" href="{% url 'create_question' space_id=space.id %}">Create Quiz</a>
+
+    {% for i in quizes %}
+
+    <div class="card">
+      <h3 class="card-header">Quiz {{ i.id }}</h3>
+      <div class="card-body">
+        <h4 class="card-title">{{ i.title }}</h4>
+        <p class="card-text"><b>Creator:</b> {{ i.creator }}</p>
+        <a href="/quiz/attempt-quiz/{{i.id}}/" class="btn btn-primary">Attempt Quiz</a>
+        {% if request.user == i.creator %}
+        <a href="/quiz/update-question/{{i.space.id}}/{{i.id}}/" class="btn btn-success">Update Quiz</a>
+        {% endif %}
+      </div>
+    </div>
+
+    {% empty %}
+
+    <p>There isn't any quizes.</p>
+
+    {% endfor %}
+
+    {% elif request.user.is_authenticated %}
+    <p>else part</p>
+
+    {% else %}
+
+    Please login to view this part.
+
+    {% endif %}
+
+  </div>
+
+</div>
+
+{% endblock %}
